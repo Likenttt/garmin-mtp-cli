@@ -39,29 +39,4 @@ void mtp_tree_tests(void) {
   ASSERT_EQ_PTR(&apps, find_child_folder(&garmin, storage.id, 1, "APPS"));
   ASSERT_TRUE(find_child_folder(&garmin, storage.id, ROOT_PARENT_ID, "APPS") == NULL);
   ASSERT_TRUE(find_child_folder(&garmin, 0x999, ROOT_PARENT_ID, "GARMIN") == NULL);
-
-  LIBMTP_file_t logs_object = {0};
-  logs_object.item_id = 3;
-  logs_object.parent_id = 2;
-  logs_object.storage_id = storage.id;
-  logs_object.filename = "LOGS";
-
-  LIBMTP_file_t apps_object = {0};
-  apps_object.item_id = 2;
-  apps_object.parent_id = 1;
-  apps_object.storage_id = storage.id;
-  apps_object.filename = "Apps";
-  apps_object.next = &logs_object;
-
-  LIBMTP_file_t garmin_object = {0};
-  garmin_object.item_id = 1;
-  garmin_object.parent_id = ROOT_PARENT_ID;
-  garmin_object.storage_id = storage.id;
-  garmin_object.filename = "GARMIN";
-  garmin_object.next = &apps_object;
-
-  ASSERT_EQ_PTR(&garmin_object, find_child_object(&garmin_object, storage.id, ROOT_PARENT_ID, "GARMIN"));
-  ASSERT_EQ_PTR(&apps_object, find_child_object(&garmin_object, storage.id, 1, "Apps"));
-  ASSERT_EQ_PTR(&logs_object, find_child_object(&garmin_object, storage.id, 2, "LOGS"));
-  ASSERT_TRUE(find_child_object(&garmin_object, storage.id, ROOT_PARENT_ID, "LOGS") == NULL);
 }

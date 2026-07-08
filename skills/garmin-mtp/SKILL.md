@@ -42,6 +42,8 @@ garmin-mtp list /
 garmin-mtp list /GARMIN/Apps/LOGS
 ```
 
+If `list /` sees storage but a Garmin path reports `directory not found`, retry after updating to `garmin-mtp` 0.1.3 or newer. That version falls back to parent-id object traversal for watches that expose storage but return an empty classic folder tree.
+
 Garmin paths are case-sensitive on some devices. On Forerunner-class devices, app logs commonly live at `/GARMIN/Apps/LOGS`, not `/GARMIN/APPS/LOG`.
 
 Pull CIQ logs into a local `logs` directory:
@@ -95,4 +97,4 @@ Use `dump` when path resolution fails or Garmin returns unusual object-tree data
 garmin-mtp dump
 ```
 
-For directory purpose and transfer-risk guidance, read `references/directories.md`.
+For directory purpose and transfer-risk guidance, read `references/directories.md`. For implementation details of the reliable fallback, read `references/parent-id-fallback.md`.

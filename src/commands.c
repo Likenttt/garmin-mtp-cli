@@ -132,8 +132,8 @@ int command_list(const Options *options, int argc, char **argv) {
   printf("Storage: %s (0x%08" PRIx32 ")\n",
          dir.storage->StorageDescription != NULL ? dir.storage->StorageDescription : "unnamed storage",
          dir.storage->id);
-  if (dir.object_list != NULL) {
-    print_child_objects(dir.object_list, dir.storage->id, dir.parent_id);
+  if (dir.uses_object_listing) {
+    print_child_objects(handle.device, dir.storage->id, dir.parent_id);
     remote_dir_free(&dir);
     path_parts_free(&parts);
     device_handle_close(&handle);

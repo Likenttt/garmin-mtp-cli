@@ -1,6 +1,6 @@
 {
   "name": "garmin-mtp-skill",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Codex and Claude Code skill installer for Garmin MTP CLI workflows",
   "license": "MIT",
   "homepage": "https://github.com/Likenttt/garmin-mtp-cli#readme",
