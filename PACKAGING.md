@@ -6,7 +6,7 @@ The GitHub Actions workflow at `.github/workflows/ci.yml` checks the tool on:
 
 - macOS 14 and macOS 15 with Homebrew `libmtp` + `pkgconf`.
 - Ubuntu 22.04 and Ubuntu 24.04 with `libmtp-dev` + `pkg-config`.
-- Windows latest with CMake + vcpkg `libmtp:x64-windows`.
+- Windows latest with MSYS2/MinGW + CMake + vcpkg `libmtp:x64-mingw-dynamic`.
 
 Use the Makefile path as the primary developer workflow on macOS/Linux:
 

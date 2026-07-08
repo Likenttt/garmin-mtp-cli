@@ -33,10 +33,28 @@ jobs:
         run: make clean check
 
   cmake-windows:
-    name: CMake (windows-latest)
+    name: CMake (windows-latest, MinGW)
     runs-on: windows-latest
     steps:
+      - name: Keep LF line endings
+        run: git config --global core.autocrlf input
+
       - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            curl
+            zip
+            unzip
+            tar
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-pkgconf
 
       - name: Configure vcpkg environment
         shell: pwsh
@@ -52,25 +70,29 @@ jobs:
           }
 
       - name: Install dependencies
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          & "$env:VCPKG_ROOT\vcpkg.exe" install --triplet x64-windows
+          VCPKG_ROOT_UNIX="$(cygpath -u "$VCPKG_ROOT")"
+          "$VCPKG_ROOT_UNIX/vcpkg.exe" install --triplet x64-mingw-dynamic
 
       - name: Configure
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          cmake -S . -B build/cmake -A x64 `
-            -DCMAKE_TOOLCHAIN_FILE="$env:CMAKE_TOOLCHAIN_FILE" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows
+          cmake -S . -B build/cmake -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE="$(cygpath -u "$CMAKE_TOOLCHAIN_FILE")" \
+            -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic
 
       - name: Build
+        shell: msys2 {0}
         run: cmake --build build/cmake --config Release
 
       - name: Test
+        shell: msys2 {0}
         run: ctest --test-dir build/cmake -C Release --output-on-failure
 
       - name: Smoke test command aliases
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          build\cmake\Release\garmin-mtp.exe manual | Select-String "Garmin MTP directory manual"
-          build\cmake\Release\garminmtp.exe menu | Select-String "Garmin MTP directory manual"
+          ./build/cmake/garmin-mtp.exe manual | grep "Garmin MTP directory manual"
+          ./build/cmake/garminmtp.exe menu | grep "Garmin MTP directory manual"
