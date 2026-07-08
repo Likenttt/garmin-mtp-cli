@@ -70,6 +70,27 @@ LIBMTP_folder_t *find_child_folder(LIBMTP_folder_t *folder, uint32_t storage_id,
   return NULL;
 }
 
+LIBMTP_file_t *find_child_object(LIBMTP_file_t *objects, uint32_t storage_id, uint32_t parent_id, const char *name) {
+  for (LIBMTP_file_t *current = objects; current != NULL; current = current->next) {
+    if (current->storage_id == storage_id &&
+        parent_matches(current->parent_id, parent_id, storage_id) &&
+        current->filename != NULL &&
+        strcmp(current->filename, name) == 0) {
+      return current;
+    }
+  }
+  return NULL;
+}
+
+static bool object_has_child(LIBMTP_file_t *objects, uint32_t item_id) {
+  for (LIBMTP_file_t *current = objects; current != NULL; current = current->next) {
+    if (current->parent_id == item_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void print_child_folders(LIBMTP_folder_t *folder, uint32_t storage_id, uint32_t parent_id) {
   for (LIBMTP_folder_t *current = folder; current != NULL; current = current->sibling) {
     if (current->storage_id == storage_id &&
@@ -78,6 +99,22 @@ void print_child_folders(LIBMTP_folder_t *folder, uint32_t storage_id, uint32_t 
       printf("d  %-12s %s/\n", "-", current->name);
     }
     print_child_folders(current->child, storage_id, parent_id);
+  }
+}
+
+void print_child_objects(LIBMTP_file_t *objects, uint32_t storage_id, uint32_t parent_id) {
+  for (LIBMTP_file_t *current = objects; current != NULL; current = current->next) {
+    if (current->storage_id != storage_id ||
+        !parent_matches(current->parent_id, parent_id, storage_id) ||
+        current->filename == NULL) {
+      continue;
+    }
+
+    if (object_has_child(objects, current->item_id)) {
+      printf("d  %-12s %s/\n", "-", current->filename);
+    } else {
+      printf("f  %-12" PRIu64 " %s\n", current->filesize, current->filename);
+    }
   }
 }
 
@@ -109,6 +146,33 @@ void print_storage_list(LIBMTP_mtpdevice_t *device) {
   }
 }
 
+static int resolve_in_object_list(LIBMTP_mtpdevice_t *device,
+                                  LIBMTP_devicestorage_t *storage,
+                                  const PathParts *parts,
+                                  size_t start_index,
+                                  RemoteDir *out) {
+  LIBMTP_file_t *objects = LIBMTP_Get_Files_And_Folders(device, storage->id, 0);
+  if (objects == NULL) {
+    return 1;
+  }
+
+  uint32_t parent_id = ROOT_PARENT_ID;
+  for (size_t i = start_index; i < parts->count; i++) {
+    LIBMTP_file_t *object = find_child_object(objects, storage->id, parent_id, parts->items[i]);
+    if (object == NULL) {
+      LIBMTP_destroy_file_t(objects);
+      return 1;
+    }
+    parent_id = object->item_id;
+  }
+
+  out->storage = storage;
+  out->parent_id = parent_id;
+  out->folder_tree = NULL;
+  out->object_list = objects;
+  return 0;
+}
+
 static int resolve_in_storage(LIBMTP_mtpdevice_t *device,
                               LIBMTP_devicestorage_t *storage,
                               const PathParts *parts,
@@ -121,7 +185,7 @@ static int resolve_in_storage(LIBMTP_mtpdevice_t *device,
     LIBMTP_folder_t *folder = find_child_folder(folder_tree, storage->id, parent_id, parts->items[i]);
     if (folder == NULL) {
       LIBMTP_destroy_folder_t(folder_tree);
-      return 1;
+      return resolve_in_object_list(device, storage, parts, start_index, out);
     }
     parent_id = folder->folder_id;
   }
@@ -129,6 +193,14 @@ static int resolve_in_storage(LIBMTP_mtpdevice_t *device,
   out->storage = storage;
   out->parent_id = parent_id;
   out->folder_tree = folder_tree;
+  out->object_list = NULL;
+
+  if (folder_tree == NULL) {
+    LIBMTP_destroy_folder_t(folder_tree);
+    memset(out, 0, sizeof(*out));
+    return resolve_in_object_list(device, storage, parts, start_index, out);
+  }
+
   return 0;
 }
 
@@ -200,5 +272,6 @@ void remote_dir_free(RemoteDir *dir) {
     return;
   }
   LIBMTP_destroy_folder_t(dir->folder_tree);
+  LIBMTP_destroy_file_t(dir->object_list);
   memset(dir, 0, sizeof(*dir));
 }

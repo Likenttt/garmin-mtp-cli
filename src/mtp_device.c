@@ -128,6 +128,34 @@ void remote_file_free(RemoteFile *file) {
 int find_file_in_dir(LIBMTP_mtpdevice_t *device, const RemoteDir *dir, const char *filename, RemoteFile *out) {
   memset(out, 0, sizeof(*out));
 
+  if (dir->object_list != NULL) {
+    int matches = 0;
+    for (LIBMTP_file_t *file = dir->object_list; file != NULL; file = file->next) {
+      if (file->storage_id == dir->storage->id &&
+          parent_matches(file->parent_id, dir->parent_id, dir->storage->id) &&
+          file->filename != NULL &&
+          strcmp(file->filename, filename) == 0) {
+        matches++;
+        if (matches == 1) {
+          out->item_id = file->item_id;
+          out->size = file->filesize;
+          out->filetype = file->filetype;
+          out->filename = xstrdup(file->filename);
+        }
+      }
+    }
+
+    if (matches == 0) {
+      return 1;
+    }
+    if (matches > 1) {
+      remote_file_free(out);
+      fprintf(stderr, "multiple files named '%s' were found in the same MTP directory\n", filename);
+      return 2;
+    }
+    return 0;
+  }
+
   LIBMTP_file_t *files = LIBMTP_Get_Filelisting_With_Callback(device, NULL, NULL);
   if (files == NULL) {
     print_mtp_errors(device);
