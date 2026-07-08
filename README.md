@@ -8,6 +8,32 @@ Full MTP builds use `libmtp` directly. The tool does not mount the watch as a no
 
 The primary command is `garmin-mtp`. Installs also provide `garminmtp` as a compatibility alias.
 
+## Codex and Claude Code skill
+
+This repository includes a `garmin-mtp` skill at `skills/garmin-mtp` for agents that work with Codex-style `SKILL.md` folders.
+
+Install directly from GitHub with `npx`:
+
+```sh
+npx github:Likenttt/garmin-mtp-cli install --target codex
+npx github:Likenttt/garmin-mtp-cli install --target claude
+npx github:Likenttt/garmin-mtp-cli install --target both
+```
+
+After publishing the npm package, the same installer can be run as:
+
+```sh
+npx garmin-mtp-skill install --target both
+```
+
+For installers that accept a GitHub skill path directly, use:
+
+```text
+Likenttt/garmin-mtp-cli/skills/garmin-mtp
+```
+
+Restart Codex or Claude Code after installing the skill.
+
 ## Build
 
 Install dependencies:

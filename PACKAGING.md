@@ -84,3 +84,28 @@ brew audit --strict --new --online garmin-mtp
 ```
 
 After the project has real users and stable releases, submit to `homebrew/core` with a pull request. Homebrew core expects source builds, a meaningful test, and support for the currently supported macOS/Linux runners.
+
+## Skill package
+
+The repository also ships a Codex/Claude Code skill in `skills/garmin-mtp`.
+
+Validate the npm installer before publishing:
+
+```sh
+npm test
+```
+
+Install from GitHub without publishing to npm:
+
+```sh
+npx github:Likenttt/garmin-mtp-cli install --target codex
+npx github:Likenttt/garmin-mtp-cli install --target claude
+npx github:Likenttt/garmin-mtp-cli install --target both
+```
+
+Publish the `npx garmin-mtp-skill` package when ready:
+
+```sh
+npm login
+npm publish --access public
+```

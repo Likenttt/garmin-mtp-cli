@@ -76,3 +76,16 @@ jobs:
         run: |
           ./build/cmake/garmin-mtp.exe manual | grep "Garmin MTP directory manual"
           ./build/cmake/garminmtp.exe menu | grep "Garmin MTP directory manual"
+
+  skill-package:
+    name: Skill package
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate npm skill installer
+        run: npm test

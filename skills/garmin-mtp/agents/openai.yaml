@@ -1,0 +1,4 @@
+interface:
+  display_name: "Garmin MTP"
+  short_description: "Work with Garmin watch files over MTP"
+  default_prompt: "Use $garmin-mtp to inspect a Garmin watch over MTP and pull CIQ logs."

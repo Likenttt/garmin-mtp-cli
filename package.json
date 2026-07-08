@@ -1,0 +1,33 @@
+{
+  "name": "garmin-mtp-skill",
+  "version": "0.1.1",
+  "description": "Codex and Claude Code skill installer for Garmin MTP CLI workflows",
+  "license": "MIT",
+  "homepage": "https://github.com/Likenttt/garmin-mtp-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Likenttt/garmin-mtp-cli.git"
+  },
+  "bin": {
+    "garmin-mtp-skill": "scripts/install-codex-skill.js"
+  },
+  "files": [
+    "skills/garmin-mtp",
+    "scripts/install-codex-skill.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node scripts/test-skill-installer.js && npm pack --dry-run"
+  },
+  "keywords": [
+    "codex",
+    "claude-code",
+    "garmin",
+    "mtp",
+    "skill"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
