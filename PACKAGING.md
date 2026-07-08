@@ -6,7 +6,7 @@ The GitHub Actions workflow at `.github/workflows/ci.yml` checks the tool on:
 
 - macOS 14 and macOS 15 with Homebrew `libmtp` + `pkgconf`.
 - Ubuntu 22.04 and Ubuntu 24.04 with `libmtp-dev` + `pkg-config`.
-- Windows latest with MSYS2/MinGW + CMake + vcpkg `libmtp:x64-mingw-dynamic`.
+- Windows latest with MSYS2/MinGW + CMake, compiled without libmtp because the current libmtp/vcpkg port does not build reliably on Windows.
 
 Use the Makefile path as the primary developer workflow on macOS/Linux:
 
@@ -14,13 +14,21 @@ Use the Makefile path as the primary developer workflow on macOS/Linux:
 make clean check
 ```
 
-Use the CMake path for Windows and for package managers that prefer CMake:
+Use the CMake path for package managers that prefer CMake:
 
 ```sh
 cmake -S . -B build/cmake
 cmake --build build/cmake
 ctest --test-dir build/cmake --output-on-failure
 ```
+
+Windows CI currently uses:
+
+```sh
+cmake -S . -B build/cmake -G Ninja -DGARMIN_MTP_WITH_LIBMTP=OFF
+```
+
+That checks the CLI, manual, argument parsing, and shared logic. Full MTP device access is currently supported by the macOS/Linux libmtp builds.
 
 ## Naming
 

@@ -4,6 +4,9 @@
   "description": "Import and export Garmin watch files from the command line over MTP.",
   "license": "MIT",
   "dependencies": [
-    "libmtp"
+    {
+      "name": "libmtp",
+      "platform": "!windows"
+    }
   ]
 }

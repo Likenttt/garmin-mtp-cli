@@ -18,7 +18,7 @@ void usage(FILE *out) {
           "  garmin-mtp [options] menu\n"
           "  garmin-mtp [options] list [mtp-dir]\n"
           "  garmin-mtp [options] pull <mtp-file> <local-file-or-dir>\n"
-          "  garmin-mtp [options] push <local-file> <mtp-dir> [remote-name]\n"
+          "  garmin-mtp [options] push [--overwrite] <local-file> <mtp-dir> [remote-name]\n"
           "\n"
           "Options:\n"
           "  --device-index N     Select the Nth detected MTP device (default: 0)\n"
@@ -34,7 +34,8 @@ void usage(FILE *out) {
           "  garmin-mtp list /\n"
           "  garmin-mtp list /GARMIN\n"
           "  garmin-mtp pull /GARMIN/APPS/EXAMPLE.PRG ./EXAMPLE.PRG\n"
-          "  garmin-mtp push ./EXAMPLE.FIT /GARMIN/NEWFILES\n");
+          "  garmin-mtp push ./EXAMPLE.FIT /GARMIN/NEWFILES\n"
+          "  garmin-mtp push --overwrite ./EXAMPLE.FIT /GARMIN/NEWFILES\n");
 }
 
 static bool parse_nonnegative_int(const char *value, int *out) {

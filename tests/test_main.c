@@ -28,11 +28,14 @@ void restore_stderr(int saved_fd) {
 }
 
 void cli_tests(void);
+#if GARMIN_MTP_WITH_LIBMTP
 void file_type_tests(void);
-void manual_tests(void);
 void mtp_tree_tests(void);
+#endif
+void manual_tests(void);
 void path_tests(void);
 void process_conflict_tests(void);
+void push_args_tests(void);
 
 static void run_test(const char *name, void (*test_fn)(void)) {
   int failures_before = tests_failed;
@@ -46,11 +49,16 @@ static void run_test(const char *name, void (*test_fn)(void)) {
 
 int main(void) {
   run_test("cli", cli_tests);
+#if GARMIN_MTP_WITH_LIBMTP
   run_test("file_type", file_type_tests);
+#endif
   run_test("manual", manual_tests);
+#if GARMIN_MTP_WITH_LIBMTP
   run_test("mtp_tree", mtp_tree_tests);
+#endif
   run_test("path", path_tests);
   run_test("process_conflict", process_conflict_tests);
+  run_test("push_args", push_args_tests);
 
   if (tests_failed != 0) {
     fprintf(stderr, "%d test group(s) failed\n", tests_failed);

@@ -17,6 +17,7 @@ SRC := \
 	src/mtp_tree.c \
 	src/path.c \
 	src/process_conflict.c \
+	src/push_args.c \
 	src/progress.c
 
 TEST_SRC := \
@@ -26,6 +27,7 @@ TEST_SRC := \
 	tests/mtp_tree_test.c \
 	tests/path_test.c \
 	tests/process_conflict_test.c \
+	tests/push_args_test.c \
 	tests/test_main.c
 
 TEST_SUPPORT_SRC := \
@@ -35,10 +37,11 @@ TEST_SUPPORT_SRC := \
 	src/memory.c \
 	src/mtp_tree.c \
 	src/path.c \
-	src/process_conflict.c
+	src/process_conflict.c \
+	src/push_args.c
 
 CFLAGS ?= -std=c11 -Wall -Wextra -Wpedantic -O2
-CPPFLAGS += -Isrc $(shell $(PKG_CONFIG) --cflags libmtp)
+CPPFLAGS += -DGARMIN_MTP_WITH_LIBMTP=1 -Isrc $(shell $(PKG_CONFIG) --cflags libmtp)
 LDLIBS += $(shell $(PKG_CONFIG) --libs libmtp)
 
 .PHONY: all check clean install test

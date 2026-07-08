@@ -6,6 +6,7 @@
 #include "mtp_tree.h"
 #include "path.h"
 #include "progress.h"
+#include "push_args.h"
 
 #include <errno.h>
 #include <inttypes.h>
@@ -268,14 +269,15 @@ int command_pull(const Options *options, int argc, char **argv) {
 }
 
 int command_push(const Options *options, int argc, char **argv) {
-  if (argc != 2 && argc != 3) {
+  PushArgs push_args;
+  if (parse_push_args(argc, argv, &push_args, stderr) != 0) {
     usage(stderr);
     return 1;
   }
 
-  const char *local_path = argv[0];
-  const char *remote_dir_path = argv[1];
-  const char *remote_name = argc == 3 ? argv[2] : local_basename(local_path);
+  const char *local_path = push_args.local_path;
+  const char *remote_dir_path = push_args.remote_dir_path;
+  const char *remote_name = push_args.remote_name != NULL ? push_args.remote_name : local_basename(local_path);
 
   if (!valid_remote_filename(remote_name)) {
     fprintf(stderr, "invalid remote filename: %s\n", remote_name != NULL ? remote_name : "(null)");
@@ -316,12 +318,26 @@ int command_push(const Options *options, int argc, char **argv) {
   RemoteFile existing_file;
   int exists = find_file_in_dir(handle.device, &dir, remote_name, &existing_file);
   if (exists == 0) {
-    fprintf(stderr, "remote file already exists and will not be overwritten: %s\n", remote_name);
+    if (!push_args.overwrite) {
+      fprintf(stderr, "remote file already exists: %s; pass --overwrite to replace it\n", remote_name);
+      remote_file_free(&existing_file);
+      remote_dir_free(&dir);
+      path_parts_free(&dir_parts);
+      device_handle_close(&handle);
+      return 1;
+    }
+
+    if (LIBMTP_Delete_Object(handle.device, existing_file.item_id) != 0) {
+      fprintf(stderr, "failed to delete existing remote file before overwrite: %s\n", remote_name);
+      print_mtp_errors(handle.device);
+      remote_file_free(&existing_file);
+      remote_dir_free(&dir);
+      path_parts_free(&dir_parts);
+      device_handle_close(&handle);
+      return 1;
+    }
+    printf("Deleted existing remote file before overwrite: %s\n", remote_name);
     remote_file_free(&existing_file);
-    remote_dir_free(&dir);
-    path_parts_free(&dir_parts);
-    device_handle_close(&handle);
-    return 1;
   }
   if (exists == 2) {
     remote_dir_free(&dir);
