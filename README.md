@@ -8,6 +8,20 @@ Full MTP builds use `libmtp` directly. The tool does not mount the watch as a no
 
 The primary command is `garmin-mtp`. Installs also provide `garminmtp` as a compatibility alias.
 
+## Command output
+
+Detect connected Garmin MTP devices:
+
+<img src="docs/images/garmin-mtp-devices.png" alt="garmin-mtp devices command output" width="760">
+
+List files in a watch directory:
+
+<img src="docs/images/garmin-mtp-list.png" alt="garmin-mtp list command output" width="760">
+
+Push and explicitly overwrite an existing remote file:
+
+<img src="docs/images/garmin-mtp-push-overwrite.png" alt="garmin-mtp push overwrite command output" width="760">
+
 ## Examples
 
 - [Natural language examples for Codex or Claude Code](examples/natural-language.md)
