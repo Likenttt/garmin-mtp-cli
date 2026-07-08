@@ -8,6 +8,11 @@ Full MTP builds use `libmtp` directly. The tool does not mount the watch as a no
 
 The primary command is `garmin-mtp`. Installs also provide `garminmtp` as a compatibility alias.
 
+## Examples
+
+- [Natural language examples for Codex or Claude Code](examples/natural-language.md)
+- [CLI example: pull CIQ logs from a Garmin watch](examples/cli-ciq-log.md)
+
 ## Codex and Claude Code skill
 
 This repository includes a `garmin-mtp` skill at `skills/garmin-mtp` for agents that work with Codex-style `SKILL.md` folders.

@@ -13,6 +13,7 @@
   },
   "files": [
     "skills/garmin-mtp",
+    "examples",
     "scripts/install-codex-skill.js",
     "README.md",
     "LICENSE"
