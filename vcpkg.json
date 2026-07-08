@@ -1,0 +1,7 @@
+{
+  "name": "garmin-mtp-cli",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "libmtp"
+  ]
+}
