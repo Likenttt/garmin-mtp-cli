@@ -1,6 +1,8 @@
 {
   "name": "garmin-mtp-cli",
   "version-string": "0.1.0",
+  "description": "Import and export Garmin watch files from the command line over MTP.",
+  "license": "MIT",
   "dependencies": [
     "libmtp"
   ]

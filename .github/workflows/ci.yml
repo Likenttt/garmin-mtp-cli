@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies
         shell: pwsh
         run: |
-          & "$env:VCPKG_ROOT\vcpkg.exe" install libmtp:x64-windows
+          & "$env:VCPKG_ROOT\vcpkg.exe" install --triplet x64-windows
 
       - name: Configure
         shell: pwsh

@@ -121,3 +121,7 @@ build/garmin-mtp --storage "Primary Storage" list /GARMIN
 - The first path segment may be a storage name, volume identifier, decimal storage id, or hex storage id such as `0x00010001`.
 - macOS MTP access can fail if another app has already claimed the USB device. Close Garmin Express, Android File Transfer, or any other MTP process before retrying.
 - On macOS, if Android File Transfer or Garmin Express appears to be running when device detection/opening fails, the tool prints a text hint with the matching background process.
+
+## License
+
+MIT
