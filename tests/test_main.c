@@ -28,6 +28,7 @@ void restore_stderr(int saved_fd) {
 }
 
 void cli_tests(void);
+void device_defaults_tests(void);
 #if GARMIN_MTP_WITH_LIBMTP
 void file_type_tests(void);
 void mtp_tree_tests(void);
@@ -49,6 +50,7 @@ static void run_test(const char *name, void (*test_fn)(void)) {
 
 int main(void) {
   run_test("cli", cli_tests);
+  run_test("device_defaults", device_defaults_tests);
 #if GARMIN_MTP_WITH_LIBMTP
   run_test("file_type", file_type_tests);
 #endif

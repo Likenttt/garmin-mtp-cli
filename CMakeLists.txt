@@ -15,6 +15,7 @@ option(GARMIN_MTP_WITH_LIBMTP "Build MTP device commands against libmtp" ${GARMI
 
 set(COMMON_SOURCES
     src/cli.c
+    src/device_defaults.c
     src/manual.c
     src/memory.c
     src/path.c
@@ -86,6 +87,7 @@ add_custom_command(TARGET garmin-mtp POST_BUILD
 
 add_executable(test-garmin-mtp
     tests/cli_test.c
+    tests/device_defaults_test.c
     tests/manual_test.c
     tests/path_test.c
     tests/process_conflict_test.c

@@ -46,6 +46,25 @@ LIBMTP_devicestorage_t *find_storage(LIBMTP_mtpdevice_t *device, const char *fil
   return NULL;
 }
 
+LIBMTP_devicestorage_t *find_default_storage(LIBMTP_mtpdevice_t *device, const DeviceDefaults *defaults) {
+  if (device == NULL || defaults == NULL) {
+    return NULL;
+  }
+
+  if (defaults->default_storage_id != 0) {
+    for (LIBMTP_devicestorage_t *storage = device->storage; storage != NULL; storage = storage->next) {
+      if (storage->id == defaults->default_storage_id) {
+        return storage;
+      }
+    }
+  }
+
+  if (defaults->default_storage_name != NULL) {
+    return find_storage(device, defaults->default_storage_name);
+  }
+  return NULL;
+}
+
 bool parent_matches(uint32_t actual, uint32_t expected, uint32_t storage_id) {
   if (expected == ROOT_PARENT_ID) {
     return actual == ROOT_PARENT_ID || actual == LIBMTP_FILES_AND_FOLDERS_ROOT || actual == storage_id;
@@ -214,7 +233,11 @@ static int resolve_in_storage_by_objects(LIBMTP_mtpdevice_t *device,
   return 0;
 }
 
-int resolve_directory(LIBMTP_mtpdevice_t *device, const Options *options, const PathParts *parts, RemoteDir *out) {
+int resolve_directory(LIBMTP_mtpdevice_t *device,
+                      const Options *options,
+                      LIBMTP_devicestorage_t *preferred_storage,
+                      const PathParts *parts,
+                      RemoteDir *out) {
   memset(out, 0, sizeof(*out));
 
   if (options->storage_filter != NULL) {
@@ -248,11 +271,27 @@ int resolve_directory(LIBMTP_mtpdevice_t *device, const Options *options, const 
     }
   }
 
+  // Prefer the model's default storage before scanning every volume, so an
+  // unqualified path such as /GARMIN resolves to internal storage when a
+  // memory card is also mounted.
+  if (preferred_storage != NULL) {
+    RemoteDir preferred;
+    memset(&preferred, 0, sizeof(preferred));
+    if (resolve_in_storage(device, preferred_storage, parts, 0, &preferred) == 0 ||
+        resolve_in_storage_by_objects(device, preferred_storage, parts, 0, &preferred) == 0) {
+      *out = preferred;
+      return 0;
+    }
+  }
+
   int matches = 0;
   RemoteDir candidate;
   memset(&candidate, 0, sizeof(candidate));
 
   for (LIBMTP_devicestorage_t *storage = device->storage; storage != NULL; storage = storage->next) {
+    if (storage == preferred_storage) {
+      continue;
+    }
     RemoteDir current;
     memset(&current, 0, sizeof(current));
     if (resolve_in_storage(device, storage, parts, 0, &current) == 0 ||

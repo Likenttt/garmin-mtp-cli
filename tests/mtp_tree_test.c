@@ -39,4 +39,28 @@ void mtp_tree_tests(void) {
   ASSERT_EQ_PTR(&apps, find_child_folder(&garmin, storage.id, 1, "APPS"));
   ASSERT_TRUE(find_child_folder(&garmin, storage.id, ROOT_PARENT_ID, "APPS") == NULL);
   ASSERT_TRUE(find_child_folder(&garmin, 0x999, ROOT_PARENT_ID, "GARMIN") == NULL);
+
+  LIBMTP_devicestorage_t external = {0};
+  external.id = 0x00030001;
+  external.StorageDescription = "External Storage";
+  storage.next = &external;
+
+  LIBMTP_mtpdevice_t device = {0};
+  device.storage = &storage;
+
+  DeviceDefaults defaults = {0};
+  defaults.default_storage_id = 0x00020001;
+  defaults.default_storage_name = "Internal Storage";
+  ASSERT_EQ_PTR(&storage, find_default_storage(&device, &defaults));
+
+  DeviceDefaults by_name = {0};
+  by_name.default_storage_name = "External Storage";
+  ASSERT_EQ_PTR(&external, find_default_storage(&device, &by_name));
+
+  DeviceDefaults no_match = {0};
+  no_match.default_storage_id = 0x00040001;
+  no_match.default_storage_name = "Missing Storage";
+  ASSERT_TRUE(find_default_storage(&device, &no_match) == NULL);
+  ASSERT_TRUE(find_default_storage(&device, NULL) == NULL);
+  ASSERT_TRUE(find_default_storage(NULL, &defaults) == NULL);
 }
