@@ -103,6 +103,10 @@ int open_device(const Options *options, DeviceHandle *handle) {
     return 1;
   }
 
+  const LIBMTP_device_entry_t *entry = &handle->raw_devices[options->device_index].device_entry;
+  handle->defaults = device_defaults_lookup(entry->vendor_id, entry->product_id);
+  handle->default_storage = find_default_storage(handle->device, handle->defaults);
+
   return 0;
 }
 

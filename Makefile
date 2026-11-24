@@ -9,6 +9,7 @@ TEST_TARGET := build/test-garmin-mtp
 SRC := \
 	src/cli.c \
 	src/commands.c \
+	src/device_defaults.c \
 	src/file_type.c \
 	src/main.c \
 	src/manual.c \
@@ -22,6 +23,7 @@ SRC := \
 
 TEST_SRC := \
 	tests/cli_test.c \
+	tests/device_defaults_test.c \
 	tests/file_type_test.c \
 	tests/manual_test.c \
 	tests/mtp_tree_test.c \
@@ -32,6 +34,7 @@ TEST_SRC := \
 
 TEST_SUPPORT_SRC := \
 	src/cli.c \
+	src/device_defaults.c \
 	src/file_type.c \
 	src/manual.c \
 	src/memory.c \

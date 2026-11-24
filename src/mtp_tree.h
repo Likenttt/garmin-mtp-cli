@@ -2,6 +2,7 @@
 #define GARMIN_MTP_TREE_H
 
 #include "cli.h"
+#include "device_defaults.h"
 #include "path.h"
 
 #include <libmtp.h>
@@ -19,13 +20,18 @@ typedef struct {
 
 bool storage_matches(LIBMTP_devicestorage_t *storage, const char *filter);
 LIBMTP_devicestorage_t *find_storage(LIBMTP_mtpdevice_t *device, const char *filter);
+LIBMTP_devicestorage_t *find_default_storage(LIBMTP_mtpdevice_t *device, const DeviceDefaults *defaults);
 bool parent_matches(uint32_t actual, uint32_t expected, uint32_t storage_id);
 LIBMTP_folder_t *find_child_folder(LIBMTP_folder_t *folder, uint32_t storage_id, uint32_t parent_id, const char *name);
 void print_child_folders(LIBMTP_folder_t *folder, uint32_t storage_id, uint32_t parent_id);
 void print_child_objects(LIBMTP_mtpdevice_t *device, uint32_t storage_id, uint32_t parent_id);
 void print_folder_tree_raw(LIBMTP_folder_t *folder, unsigned depth);
 void print_storage_list(LIBMTP_mtpdevice_t *device);
-int resolve_directory(LIBMTP_mtpdevice_t *device, const Options *options, const PathParts *parts, RemoteDir *out);
+int resolve_directory(LIBMTP_mtpdevice_t *device,
+                      const Options *options,
+                      LIBMTP_devicestorage_t *preferred_storage,
+                      const PathParts *parts,
+                      RemoteDir *out);
 void remote_dir_free(RemoteDir *dir);
 
 #endif

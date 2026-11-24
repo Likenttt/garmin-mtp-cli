@@ -99,6 +99,7 @@ make test
 
 - `src/main.c` - thin command dispatcher.
 - `src/cli.*` - option parsing and help text.
+- `src/device_defaults.*` - built-in model defaults for devices missing from the installed libmtp release.
 - `src/manual.*` - built-in directory manual shown by `manual` and `menu`.
 - `src/path.*` - MTP/local path parsing helpers.
 - `src/file_type.*` - local filename to MTP file type mapping.
@@ -106,6 +107,7 @@ make test
 - `src/mtp_device.*` - libmtp device detection, opening, and file lookup.
 - `src/commands.*` - command orchestration for `devices`, `dump`, `list`, `pull`, and `push`.
 - `tests/` - unit tests for pure logic and fake MTP object-tree matching.
+- `contrib/libmtp/` - patch and notes for libmtp releases that predate the Venu 4 45mm entry.
 
 The unit tests intentionally do not open a real watch. Use `devices`, `dump`, and a known harmless `pull` path as manual integration checks when a watch is connected.
 
@@ -174,6 +176,27 @@ If multiple MTP devices or storage volumes are present, use:
 build/garmin-mtp --device-index 1 list /
 build/garmin-mtp --storage "Primary Storage" list /GARMIN
 ```
+
+## Device support
+
+`garmin-mtp` has built-in defaults for recent Garmin models, so it can print the
+model name and prefer the watch's internal storage even when the installed
+libmtp release does not know the USB ID yet.
+
+| Model | USB ID | Default storage |
+| --- | --- | --- |
+| Garmin Venu 4 (45mm) | `091e:5223` | `Internal Storage` (`0x00020001`) |
+| Garmin Venu 4 (41mm) | `091e:5224` | `Internal Storage` (`0x00020001`) |
+
+The default storage is only a preference. An explicit `--storage` value or a
+storage prefix in the path still wins, and a path that exists only on another
+volume is still found.
+
+libmtp v1.1.23 does not know the Venu 4 45mm USB ID and prints
+`Device 0 (VID=091e and PID=5223) is UNKNOWN in libmtp v1.1.23.` This warning is
+informational and the CLI still works. To remove it, apply the libmtp patch in
+`contrib/libmtp/` and rebuild libmtp, or install a libmtp release that includes
+the entry.
 
 ## Notes
 

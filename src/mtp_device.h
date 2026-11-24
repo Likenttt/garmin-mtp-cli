@@ -2,6 +2,7 @@
 #define GARMIN_MTP_DEVICE_H
 
 #include "cli.h"
+#include "device_defaults.h"
 #include "mtp_tree.h"
 
 #include <libmtp.h>
@@ -11,6 +12,8 @@ typedef struct {
   LIBMTP_mtpdevice_t *device;
   LIBMTP_raw_device_t *raw_devices;
   int raw_device_count;
+  const DeviceDefaults *defaults;
+  LIBMTP_devicestorage_t *default_storage;
 } DeviceHandle;
 
 typedef struct {

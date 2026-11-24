@@ -39,10 +39,18 @@ int command_devices(const Options *options) {
 
   for (int i = 0; i < raw_device_count; i++) {
     LIBMTP_raw_device_t *raw = &raw_devices[i];
+    const DeviceDefaults *defaults =
+        device_defaults_lookup(raw->device_entry.vendor_id, raw->device_entry.product_id);
+    const char *vendor = defaults != NULL
+        ? defaults->vendor
+        : (raw->device_entry.vendor != NULL ? raw->device_entry.vendor : "unknown-vendor");
+    const char *product = defaults != NULL
+        ? defaults->model
+        : (raw->device_entry.product != NULL ? raw->device_entry.product : "unknown-product");
     printf("[%d] %s %s vendor=0x%04x product=0x%04x bus=%u dev=%u\n",
            i,
-           raw->device_entry.vendor != NULL ? raw->device_entry.vendor : "unknown-vendor",
-           raw->device_entry.product != NULL ? raw->device_entry.product : "unknown-product",
+           vendor,
+           product,
            raw->device_entry.vendor_id,
            raw->device_entry.product_id,
            raw->bus_location,
@@ -122,7 +130,7 @@ int command_list(const Options *options, int argc, char **argv) {
   }
 
   RemoteDir dir;
-  status = resolve_directory(handle.device, options, &parts, &dir);
+  status = resolve_directory(handle.device, options, handle.default_storage, &parts, &dir);
   if (status != 0) {
     path_parts_free(&parts);
     device_handle_close(&handle);
@@ -203,7 +211,7 @@ int command_pull(const Options *options, int argc, char **argv) {
   }
 
   RemoteDir dir;
-  status = resolve_directory(handle.device, options, &dir_parts, &dir);
+  status = resolve_directory(handle.device, options, handle.default_storage, &dir_parts, &dir);
   if (status != 0) {
     RemoteFile full_name_file;
     int full_name_status = find_file_by_full_name(handle.device, remote_path, &full_name_file);
@@ -316,7 +324,7 @@ int command_push(const Options *options, int argc, char **argv) {
   }
 
   RemoteDir dir;
-  status = resolve_directory(handle.device, options, &dir_parts, &dir);
+  status = resolve_directory(handle.device, options, handle.default_storage, &dir_parts, &dir);
   if (status != 0) {
     path_parts_free(&dir_parts);
     device_handle_close(&handle);
